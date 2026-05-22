@@ -1,6 +1,6 @@
 # Microanalytics Services (MAS) - Model Context Protocol (MCP) Tool Maker
 
-This notebook helps you programmatically experience the workflow involved in creating a Model Context Protocol (MCP) server encapsulating published SAS Microanalytics Services modules discovered in a SAS Viya environment. The output is a Python script (in two flavours) which can be used to stand up an MCP server through stdio, Streamable HTTP (planned) and SAS Retrieval Agent Manager.
+This notebook helps you programmatically create a Model Context Protocol (MCP) server script calling published SAS Microanalytics Services modules discovered in a SAS Viya environment. The output is a Python script (in two flavours) which can be used to stand up an MCP server through stdio, Streamable HTTP (planned) and SAS Retrieval Agent Manager.
 
 ## Installation & Set up
 1. Requirements: Python 3.12 or later
