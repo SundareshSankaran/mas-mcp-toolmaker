@@ -2,6 +2,8 @@
 
 This notebook helps you programmatically create a Model Context Protocol (MCP) server script calling published SAS Microanalytics Services modules discovered in a SAS Viya environment. The output is a Python script (in two flavours) which can be used to stand up an MCP server through stdio, Streamable HTTP (planned) and SAS Retrieval Agent Manager.
 
+A wiki of this repo has been generated using DeepWiki and is available here: [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/SundareshSankaran/mas-mcp-toolmaker)
+
 ## Installation & Set up
 1. Requirements: Python 3.12 or later
 2. Ensure your Python environment has the following packages from [`requirements.txt`](./build/requirements.txt) installed.
