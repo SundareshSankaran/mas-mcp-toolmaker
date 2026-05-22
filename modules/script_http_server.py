@@ -16,18 +16,19 @@ def py_type_for_module_type(t: str) -> str:
 
 
 
-# Build starter commands for an stdio FastMCP server
+# Build starter commands for an HTTP FastMCP server
 
-def build_stdio_fastmcp_header() -> str:
+def build_http_fastmcp_header() -> str:
     lines = ["import os",
              "import requests",
-             "import json",
+             "from fastapi import FastAPI",
+             "import uvicorn",
              "from mcp.server.fastmcp import FastMCP",
              "from dotenv import load_dotenv",
              "",
              "load_dotenv()",
              "",
-             "mcp = FastMCP(\"generated-server\", json_response=True )",
+             "mcp = FastMCP(\"generated-http-server\", json_response=True )",
              " ", 
              " "]
     return "\n".join(lines)
@@ -40,12 +41,11 @@ def build_fastmcp_tool_def(spec: dict) -> str:
     endpoint = spec["module_endpoint"]
     inputs = spec.get("module_inputs", [])
     outputs = spec.get("module_outputs", [])
-    
 
     tool_name = tool_name_from_endpoint(endpoint)
     tool_name = tool_name.replace("%", "_").replace("-","_")
     if "module_description" in spec:
-        if any(char.isalpha() for char in spec["module_description"]):
+         if any(char.isalpha() for char in spec["module_description"]):
             tool_description = spec["module_description"]
         else:
             tool_description = f"Auto-generated tool for {tool_name}."
@@ -96,21 +96,29 @@ def build_fastmcp_tool_def(spec: dict) -> str:
 
     return "\n".join(lines)
 
-# Build footer (starting service) commands for an stdio server
+# Build footer (starting service) commands for an HTTP MCP server
 
-def build_stdio_fastmcp_server_script() -> str:
+def build_http_fastmcp_server_script() -> str:
     lines = [" ",
+             "app = FastAPI()",
+             "",
+             "",
+             "# Mount MCP at /mcp",
+             "app.mount(\"/mcp\", mcp.streamable_http_app())",
+             "@app.get(\"/\")",
+             "def root():",
+             "    return {\"status\": \"ok\", \"mcp\": \"/mcp\"}",
+             "",
              "if __name__ == \"__main__\":",
-             "    mcp.run()",
-             " ",
-             ""]
+             "    uvicorn.run(app, host=\"localhost\", port=8000)",
+             " "]
     return "\n".join(lines)
     
-def script_mcp_stdio_server(filename:str, module_contracts=[]) -> str:
+def script_mcp_http_server(filename:str, module_contracts=[]) -> str:
     import os
     with open(os.path.join(filename),"w") as f:
-        f.write(build_stdio_fastmcp_header())
+        f.write(build_http_fastmcp_header())
         for module in module_contracts:
             f.write(build_fastmcp_tool_def(module))
-        f.write(build_stdio_fastmcp_server_script())
+        f.write(build_http_fastmcp_server_script())
     return f"MCP Server created at {filename}"

@@ -1,3 +1,7 @@
+# Import tool_name_from_endpoint function
+
+from .get_module_info import tool_name_from_endpoint
+
 # This function returns a Python object / data type for arguments that specify types used in other languages and frameworks.
 
 from typing import Any
@@ -10,14 +14,7 @@ def py_type_for_module_type(t: str) -> str:
         "boolean": "bool",
     }.get(t.lower(), t.lower())
 
-# This function, given an endpoint, returns a tool name
 
-def tool_name_from_endpoint(endpoint: str) -> str:
-    parts = endpoint.rstrip("/").split("/")
-    for part in reversed(parts):
-        if part and part not in {"steps", "score", "execute"}:
-            return part
-    return "generated_tool"
 
 # Build starter commands for a RAM FastMCP server
 
@@ -26,6 +23,9 @@ def build_ram_fastmcp_header() -> str:
              "import requests",
              "import json",
              "from sasram.mcp import tool",
+             "from dotenv import load_dotenv",
+             "",
+             "load_dotenv()",
              " ", 
              " "]
     return "\n".join(lines)
@@ -41,6 +41,13 @@ def build_ram_fastmcp_tool_def(spec: dict) -> str:
 
     tool_name = tool_name_from_endpoint(endpoint)
     tool_name = tool_name.replace("%", "_").replace("-","_")
+    if "module_description" in spec:
+         if any(char.isalpha() for char in spec["module_description"]):
+            tool_description = spec["module_description"]
+         else:
+            tool_description = f"Auto-generated tool for {tool_name}."
+    else:
+        tool_description = f"Auto-generated tool for {tool_name}."
     # server_path = endpoint.replace("/steps/score", "/steps/execute")
     server_path = urlsplit(endpoint).path
 
@@ -65,10 +72,10 @@ def build_ram_fastmcp_tool_def(spec: dict) -> str:
         " ",
         "@tool",
         f"def {tool_name}({sig}) -> dict:",
-        f'    """Auto-generated tool for {tool_name}."""',
+        f'    """{tool_description}"""',
         '    try:',
         f'        input_payload = {{"inputs":[{",".join(payload_items)}]}}',
-        f'        url = f\"{{os.getenv(\'VIYA_URL\')}}{server_path}\"',
+        f'        url = f\"{{os.getenv(\'VIYA_HOST\')}}{server_path}\"',
         '        access_token = os.getenv("VIYA_ACCESS_TOKEN")',
         '        headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json"}',
         '        resp = requests.post(url=url, headers=headers, json=input_payload)',
