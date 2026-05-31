@@ -1,10 +1,3 @@
-python-dotenv
-requests
 jupyter
 ipykernel
-ollama
-fastmcp
-mcp
-uvicorn
-fastapi
-fastapi-mcp
+mas-mcp-toolmaker

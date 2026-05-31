@@ -12,6 +12,7 @@ def get_module_urls(modules, viya_host = "") -> list:
     module_urls = []
     for idx,module in enumerate(modules.get("items", [])):
         if module["moduleProperties"]["module_type"]!= "Missing":
+            module_type = module["moduleProperties"]["module_type"]
             for link in module.get("links",[]):
                 if link["rel"]=="steps":
                     module_url = f"{viya_host}{link["uri"]}"
@@ -25,7 +26,7 @@ def get_module_urls(modules, viya_host = "") -> list:
                 description = module["moduleProperties"]["description"]
             else:
                 description = f"Auto-generated tool for {tool_name_from_endpoint(module_url)}"
-            module_urls.append({"module_endpoint": module_url, "description":description})
+            module_urls.append({"module_endpoint": module_url, "description":description, "module_type": module_type})
     return module_urls
 
 def get_module_contracts(module_endpoints: list) -> list:
@@ -50,7 +51,7 @@ def get_module_contracts(module_endpoints: list) -> list:
                     outputs = resp_json["outputs"]
                 else:
                     outputs = [{"message":"No outputs"}]
-                module_contract = {"module_endpoint": module["module_endpoint"], "module_description": module["description"], "module_inputs": inputs, "module_outputs": outputs} 
+                module_contract = {"module_endpoint": module["module_endpoint"], "module_description": module["description"],"module_type": module["module_type"], "module_inputs": inputs, "module_outputs": outputs} 
                 del(inputs)
                 del(outputs)
                 module_contracts.append(module_contract)
