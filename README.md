@@ -68,4 +68,4 @@ Refer the notebook for other functions.
 
 ## Version
    - Version 1.1.0 (31MAY2026)
-   - Version 1.0 (13MAY2026)
+   - Version 1.0.0 (13MAY2026)
